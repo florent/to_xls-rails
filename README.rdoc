@@ -50,6 +50,8 @@ In your view:
   @posts.to_xls
   @posts.to_xls(:only => [:title, :body])
   @posts.to_xls(:except => [:id])
+  @posts.to_xls(:from_json => true)
+  @posts.to_xls(:from_json => true, :only => [:body])
   @posts.to_xls(:header => false)
 
   # Will prepend above header
