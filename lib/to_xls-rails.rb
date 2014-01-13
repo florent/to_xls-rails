@@ -16,7 +16,9 @@ class Array
     book = Spreadsheet::Workbook.new
     sheet = book.create_worksheet
 
-    if options[:only]
+    if options[:from_json] && self.present?
+      columns = self.first.as_json(options.slice(:only, :except)).keys.map(&:to_sym)
+    elsif options[:only]
       columns = Array(options[:only]).map(&:to_sym)
     elsif !self.empty?
       columns = self.first.class.column_names.map(&:to_sym) - Array(options[:except]).map(&:to_sym)
@@ -43,7 +45,9 @@ class Array
     end
 
     self.each_with_index do |obj, index|
-      if block
+      if options[:from_json]
+        sheet.row(sheet_index).replace(obj.as_json(:only => columns).values)
+      elsif block
         sheet.row(sheet_index).replace(columns.map { |column| block.call(column, obj.send(column), index) })
       else
         sheet.row(sheet_index).replace(columns.map { |column| obj.send(column) })
